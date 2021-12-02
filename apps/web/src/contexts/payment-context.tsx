@@ -3,6 +3,7 @@ import {
   GetPaymentBankAccountStatus,
   GetPaymentCardStatus,
   Payment,
+  PaymentStatus,
   PublicKey,
   PublishedPack,
 } from '@algomart/schemas'
@@ -184,6 +185,14 @@ export function usePaymentProvider({
       // Throw error if there was a failure code
       if (!paymentResponse || paymentResponse.status === 'failed') {
         throw new Error('Payment failed')
+      }
+
+      if (
+        paymentResponse.status === PaymentStatus.ActionRequired &&
+        paymentResponse.action
+      ) {
+        window.location.assign(paymentResponse.action)
+        return null
       }
 
       return payment
@@ -568,22 +577,22 @@ export function usePaymentProvider({
         }
 
         if (isPurchase) {
-          const { id, packId } = await handlePurchase(
+          const payment = await handlePurchase(
             securityCode,
             cardId,
             publicKeyRecord
           )
 
           // Throw error if failed request
-          if (!packId) throw new Error('Pack not available')
+          if (!payment || !payment.packId) throw new Error('Pack not available')
 
-          setPackId(packId)
+          setPackId(payment.packId)
           setStatus('success')
           if (release) {
             Analytics.instance.purchase({
               itemName: release.title,
               value: release.price,
-              paymentId: id,
+              paymentId: payment.id,
             })
           }
         } else {
