@@ -6,7 +6,9 @@ Scribe runs various background tasks and syncs data from the CMS into read-only 
 
 Make sure you configure the webhook according to the steps in the [CMS readme](../cms/README.md).
 
-Ensure the `.env` file is configured. Use the `.env.example` as a base (this is very similar to the API's `.env` file).
+Duplicate `.env.sample` > `.env` in the `scribe` folder and enter the required environment variables. Make sure you've created a Postgres databases that matches what's set in the `DATABASE_URL` key in your `api/.env` file.
+
+_NOTE_: The `scribe/.env` and the `api/.env` are almost identical and will share most values, the notable exception being the `PORT` value in the Scribe Configuration section. These must run on separate ports.
 
 If you're not using the default `DATABASE_SCHEMA=public` in your `.env` file, then you'll need to make sure to create the schema you choose:
 
